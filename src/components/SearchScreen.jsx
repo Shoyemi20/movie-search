@@ -1,6 +1,6 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import axios from "axios";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom"; 
 import Loader from "./Loader";
 
 const SearchScreen = () => {
@@ -9,6 +9,17 @@ const SearchScreen = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const navigate = useNavigate();
+  const location = useLocation(); 
+
+  // Initialize search term and results from location state
+  useEffect(() => {
+    if (location.state?.searchTerm) {
+      setSearchTerm(location.state.searchTerm);
+    }
+    if (location.state?.searchResults) {
+      setMovie(location.state.searchResults);
+    }
+  }, [location.state]);
 
   const searchMovie = async () => {
     if (!searchTerm.trim()) {
@@ -32,7 +43,7 @@ const SearchScreen = () => {
       }
     } catch (err) {
       setError("Something went wrong. Please try again.");
-      console.error(err); 
+      console.error(err);
     }
     setLoading(false);
   };
@@ -44,11 +55,16 @@ const SearchScreen = () => {
   };
 
   const viewDetails = (id) => {
-    navigate(`/movie/${id}`);
+    navigate(`/movie/${id}`, {
+      state: {
+        searchTerm, // Pass the search term
+        searchResults: movie, // Pass the search results
+      },
+    });
   };
 
   return (
-    <div className="min-h-screen bg-gray-900 p-8">
+    <div className="p-8 min-h-screen bg-gray-900">
       <h1 className="text-3xl font-bold mb-6 text-center text-white">
         Search for a Movie
       </h1>
@@ -65,7 +81,7 @@ const SearchScreen = () => {
           />
           <button
             onClick={searchMovie}
-            disabled={loading} 
+            disabled={loading}
             className="bg-gray-900 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition-all duration-300 border-4 border-gray-800 font-medium disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {loading ? "Searching..." : "Search"}
@@ -74,7 +90,6 @@ const SearchScreen = () => {
       </div>
 
       {loading && <Loader />}
-
       {error && <p className="text-red-500 text-center mb-4">{error}</p>}
 
       {!loading && movie.length === 0 && !error && (

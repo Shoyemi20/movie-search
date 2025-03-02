@@ -1,13 +1,14 @@
 import { useEffect, useState } from "react";
-import { useParams, useNavigate } from "react-router-dom"; 
+import { useParams, useNavigate, useLocation } from "react-router-dom"; 
 import axios from "axios";
-import { FaCalendarAlt, FaStar } from "react-icons/fa";
+import { FaCalendarAlt, FaStar, FaArrowLeft } from "react-icons/fa";
 import { IoTime } from "react-icons/io5";
 import Loader from "../components/Loader";
 
 const MovieDetails = () => {
   const { id } = useParams(); // Get the movie ID from the URL
-  const navigate = useNavigate(); 
+  const navigate = useNavigate();
+  const location = useLocation(); 
   const [movieDetails, setMovieDetails] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
@@ -36,9 +37,14 @@ const MovieDetails = () => {
     fetchMovieDetails();
   }, [id]);
 
-  // Go back to the previous page
+  // Go back to the home page with search results
   const goBack = () => {
-    navigate(-1); 
+    navigate("/", {
+      state: {
+        searchTerm: location.state?.searchTerm, 
+        searchResults: location.state?.searchResults, 
+      },
+    });
   };
 
   if (loading) return <Loader />;
@@ -46,11 +52,12 @@ const MovieDetails = () => {
 
   return (
     <div className="p-8 min-h-screen bg-gray-900 px-24">
-      {/* Go Back Button */}
+      {/* Go Back Button with Arrow Icon */}
       <button
         onClick={goBack}
-        className="text-3xl mb-6 bg-gray-800 text-white px-6 py-2 rounded-lg hover:bg-gray-700 transition-all duration-300"
+        className="flex items-center gap-2 mb-6 bg-gray-800 text-white px-6 py-2 rounded-lg hover:bg-gray-700 transition-all duration-300"
       >
+        <FaArrowLeft className="text-xl" /> 
         Go Back
       </button>
 
