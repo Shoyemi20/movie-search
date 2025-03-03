@@ -21,3 +21,6 @@ Axios: For making HTTP requests to the OMDb API.
 Tailwind CSS: For styling the application.
 
 Vite: Build tool for fast development.
+
+Live Demo
+Check out the live demo of the application: [Movie Search App](https://illustrious-pika-139393.netlify.app/)
